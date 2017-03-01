@@ -1,0 +1,28 @@
+FROM ubuntu:16.04
+MAINTAINER Martin Ellis <martin.ellis@gov.scot>
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install --no-install-recommends -y \
+  dpkg-dev \
+  libaugeas0 \
+  python
+RUN touch /mnt/Packages && echo 'deb file:///mnt/ ./' > /etc/apt/sources.list.d/local.list
+COPY certbot_*deb /mnt/
+RUN cd /mnt && dpkg-scanpackages . > Packages
+RUN adduser \
+    --system \
+    --group \
+    --disabled-password \
+    --disabled-login \
+    --gecos "Devops" \
+    --quiet \
+    devops && \
+    mkdir /srv/certbot /srv/www && \
+    chown devops:devops /srv/certbot /srv/www
+RUN apt-get update && \
+  apt-get install \
+    --no-install-recommends \
+    --allow-unauthenticated \
+    -y \
+    certbot
+USER devops
+CMD /bin/bash

@@ -1,0 +1,18 @@
+FROM ubuntu:16.04
+MAINTAINER Martin Ellis <martin.ellis@gov.scot>
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install -y \
+    devscripts \
+    equivs \
+    python-virtualenv \
+    libjs-sphinxdoc && \
+  curl -O http://gb.archive.ubuntu.com/ubuntu/pool/universe/d/dh-virtualenv/dh-virtualenv_1.0-1_all.deb && \
+  dpkg -i dh-virtualenv_1.0-1_all.deb
+COPY debian/control /mnt/debian/control
+RUN cd /mnt && \
+  mk-build-deps -i -r --tool 'apt-get --no-install-recommends -y -q'
+CMD rm -rf /src && \
+  cp -a /mnt/ /src && \
+  cd /src && \
+  dpkg-buildpackage -b -us -uc 2>&1 | tee /mnt/build.log && \
+  cp ../certbot_*deb /mnt

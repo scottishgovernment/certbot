@@ -1,0 +1,15 @@
+Source: certbot
+Section: mygov
+Priority: optional
+Maintainer: Martin Ellis <martin.ellis@gov.scot>
+Build-Depends: debhelper (>= 8.0.0), dh-virtualenv (>= 1.0-1), dh-systemd,
+ python, python-dev, python-virtualenv, libaugeas0, augeas-lenses,
+ libssl-dev, openssl, libffi-dev, ca-certificates
+Standards-Version: 3.9.4
+Homepage: https://github.com/certbot/certbot
+
+Package: certbot
+Architecture: any
+Depends: augeas-lenses, libaugeas0, openssl, ca-certificates,
+ ${shlibs:Depends}, ${misc:Depends}
+Description: Let's Encrypt client

@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+#export DH_VERBOSE=1
+export DH_VIRTUALENV_INSTALL_ROOT=/opt
+export VERSION=0.11.1
+
+%:
+	dh $@ --with python-virtualenv,systemd
+
+override_dh_virtualenv:
+	install -D -m 0755 bin/certbot debian/certbot/usr/bin/certbot
+	mkdir -p debian/tmp
+	echo 'certbot==$(VERSION)' > debian/tmp/requirements.txt
+	dh_virtualenv \
+	       -D debian/tmp \
+	       --skip-install \
+	       --extra-pip-arg='--no-binary=:all:'
+	find debian/certbot$(DH_VIRTUALENV_INSTALL_ROOT) -name "*.pyc" -delete
+
+version:
+	@echo $(VERSION)

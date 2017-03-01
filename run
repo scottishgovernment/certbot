@@ -1,0 +1,4 @@
+#!/bin/sh
+set -e
+docker build -f Docker-run -t certbot .
+docker run --rm -i -t certbot

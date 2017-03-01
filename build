@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+
+while test $# -gt 0; do
+  case "$1" in
+    -v)
+      VERSION=$2;;
+  esac
+  shift
+done
+
+if [ -z "$VERSION" ]; then
+  version=$(make -f debian/rules version)
+  last=$(git tag -l | grep ^${version}- | cut -d- -f2 | sort -nr | head -1)
+  next=$(( last + 1 ))
+  VERSION=${version}-${next}
+fi
+
+rm -f debian/changelog
+dch --create --package certbot -v $VERSION ""
+docker build -f Docker-build -t certbot-build .
+docker run --rm -t -v $PWD:/mnt certbot-build
